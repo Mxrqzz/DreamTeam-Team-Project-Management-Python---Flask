@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=Lily+Script+One&display=swap');
+
+/* Estilos gerais */
+body {
+  margin: 0;
+  font-family: 'Jura', sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.background-ellipse {
+  position: absolute;
+  top: -100px; /* Ajuste a posição vertical */
+  left: -200px; /* Ajuste a posição horizontal */
+  width: 600px;
+  height: 400px;
+  background: transparent;
+  border: 5px solid #4CAF50;
+  border-radius: 75%;
+  z-index: -1; /* Fica atrás de outros elementos */
+  opacity: 0.2; /* Torna a elipse mais suave */
+}
+/* Tema claro */
+body.light-mode {
+  background-color: #F9F9F9;
+  color: #212121;
+}
+
+body.light-mode .icon-text .text h1 {
+  color: #212121;
+}
+
+/* Tema escuro */
+body.dark-mode {
+  background-color: #121212;
+  color: #E0E0E0;
+}
+
+body.dark-mode .icon-text .text h1 {
+  color: #E0E0E0;
+}
+
+
+.menu-superior {
+  padding-top: 25px;
+  padding-left: 30px;
+}
+
+/* Estilizando a navegação */
+.menu-superior ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.menu-superior ul li {
+  margin: 0 10px;
+  color: #4CAF50;
+}
+
+
+.menu-superior ul li a {
+  text-decoration: none;
+  color: inherit;
+  /* Herda a cor do tema */
+  padding: 5px 10px;
+}
+
+
+.menu-superior ul li a:hover {
+  color: #81C784;
+}
+
+.menu-superior li {
+  padding-left: 50px;
+  font-size: 18px;
+}
+
+.container {
+  margin: 0 auto;
+  margin-top: 60px;
+  padding: 20px;
+  margin-left: 80px;
+  display: flex;
+}
+
+.lado1 {
+  margin-right: 50px;
+}
+
+.lado1 img{
+  width: 590px;
+  height: 431px;
+}
+
+.lado2 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.title {
+  color: #4CAF50;
+  font-family: "Lily Script One", system-ui;
+  display: flex;
+  text-align: center;
+  font-size: 22px;
+}
+
+.TeamTx {
+  color: #81C784;
+}
+
+.text-box {
+  width: 85%;
+}
+
+.text-box h4 {
+  color: #4CAF50;
+  text-align: justify;
+
+}
+
+.buttons-box {
+  margin-top: 50px;
+  display: flex;
+  gap: 30px;
+}
+
+.button {
+  background-color: transparent;
+  color: #4CAF50;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: 2px solid #4CAF50;
+  border-radius: 35px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.button:hover{
+  background-color: #81C784;
+  color: black;
+}
