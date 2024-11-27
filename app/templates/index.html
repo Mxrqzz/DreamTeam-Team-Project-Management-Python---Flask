@@ -1,64 +1,96 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/css/style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/css/style.css" />
     <title>DreamTeam</title>
-</head>
+  </head>
 
-<body class="light-mode">
+  <body class="light-mode">
     <div class="background-ellipse"></div>
     <header class="menu-superior">
-        <ul>
-            <li><img src="static/icons/DreamTeam.svg" class="logo" alt="logo do DreamTeam"></li>
-            <li><a href="#">Redes</a></li>
-            <li><a href="#">Contato</a></li>
-            <li><a href="#">Sobre nós</a></li>
-            <li>
-                <img src="static/icons/login.svg" height="20" alt="icone de login"><a href="#">Login</a>
-            </li>
-            <li>
-                <img src="static/icons/register.svg" height="20" alt="icone de cadastro">
-                <a href="#">Cadastro</a>
-            </li>
+      <ul>
+        <li>
+          <img
+            src="static/icons/DreamTeam.svg"
+            class="logo"
+            alt="logo do DreamTeam"
+          />
+        </li>
+        <li><a href="#">Redes</a></li>
+        <li><a href="#">Contato</a></li>
+        <li><a href="#">Sobre nós</a></li>
+        <li>
+          <img
+            src="static/icons/login.svg"
+            height="20"
+            alt="icone de login"
+          /><a href="/login">Login</a>
+        </li>
+        <li>
+          <img
+            src="static/icons/register.svg"
+            height="20"
+            alt="icone de cadastro"
+          />
+          <a href="/register">Cadastro</a>
+        </li>
 
-            <li> <a href="#" id="theme-toggle" class="button-mode">
-                    <img src="static/icons/mode.png" alt="Ícone de sol e lua" height="25"></a></li>
-        </ul>
+        <li>
+          <a href="#" id="theme-toggle" class="button-mode">
+            <img
+              src="static/icons/mode.png"
+              alt="Ícone de sol e lua"
+              height="25"
+          /></a>
+        </li>
+      </ul>
     </header>
     <div class="container">
-        <div class="lado1">
-            <img src="static/icons/index.svg" alt="">
+      <div class="ladoImg">
+        <img src="static/icons/index.svg" alt="" />
+      </div>
+      <div class="ladoContent">
+        <div class="title-index">
+          <h1>Bem vindo ao Dream</h1>
+          <h1 class="TeamTx">Team</h1>
+          <h1>!</h1>
         </div>
-        <div class="lado2">
-            <div class="title">
-                <h1>Bem vindo ao Dream</h1>
-                <h1 class="TeamTx">Team </h1>
-                <h1> !</h1>
-            </div>
-            <div class="text-box">
-                <h4>
-                    Nossa plataforma foi criada para ajudar equipes a organizar, gerenciar e colaborar em projetos com
-                    eficiência e praticidade.
-                </h4>
-                <h4>
-                    Seja uma startup, um novo empreendimento ou uma equipe criativa, aqui você
-                    encontra todas as ferramentas para levar suas ideias ao próximo nível
-                </h4>
-            </div>
-            <div class="buttons-box">
-                <button class="button">Entrar <img src="static/icons/login.svg" height="20"
-                        alt="icone de login"></button>
-
-                <button class="button">Criar uma conta <img src="static/icons/register.svg" height="20"
-                        alt="icone de cadastro"></button>
-            </div>
+        <div class="text-box">
+          <h4>
+            Nossa plataforma foi criada para ajudar equipes a organizar,
+            gerenciar e colaborar em projetos com eficiência e praticidade.
+          </h4>
+          <h4>
+            Seja uma startup, um novo empreendimento ou uma equipe criativa,
+            aqui você encontra todas as ferramentas para levar suas ideias ao
+            próximo nível
+          </h4>
         </div>
+        <div class="buttons-box">
+          <a href="/login">
+            <button class="button">
+              Entrar
+              <img
+                src="static/icons/login.svg"
+                height="20"
+                alt="icone de login"
+              /></button
+          ></a>
+          <a href="/register">
+            <button class="button">
+              Criar uma conta
+              <img
+                src="static/icons/register.svg"
+                height="20"
+                alt="icone de cadastro"
+              /></button
+          ></a>
+        </div>
+      </div>
     </div>
-</body>
+  </body>
 
-<script src="static/js/script.js"></script>
-
+  <script src="static/js/script.js"></script>
 </html>

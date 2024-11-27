@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/style.css">
+    <title>DreamTeam - Cadastro</title>
+</head>
+<body>
+    <header class="menu-superior">
+        <ul>
+            <div class="logo">
+            <li><a href="/index"><img src="static/icons/DreamTeam.svg" class="logo" alt="logo do DreamTeam"></a></li>
+        </div>
+            <li>
+                <div class="text-mode">
+                Já tem uma conta? <a href="/login"> Faça login</a><img src="static/icons/login.svg" height="20" alt="icone de login">
+            </li>
+            <li> <a href="#" id="theme-toggle" class="button-mode">
+                    <img src="static/icons/mode.png" alt="Ícone de sol e lua" height="25"></a></li>
+                    </div>
+        </ul>
+    </header>
+
+    <div class="container">
+        <div class="ladoContent">
+            <div class="form-box">
+                <form  class="formulario" action="/register"  method="POST">
+                    <div class="title">Registre-se</div>
+                            <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+                    <div class="input-group">
+                        <div class="input-box">
+                            <input type="text" id="nome" name="nome" placeholder="Seu Nome:" required maxlength="32">
+                        </div>
+                        <div class="input-box">
+                            <input type="text" id="username" name="username" placeholder="Username:" required maxlength="32">
+                        </div>
+                        <div class="input-box">
+                            <input type="email" id="email" name="email" placeholder="E-mail:" maxlength="80" required>
+                        </div>
+                        <div class="input-box">
+                            <input type="password" id="password" name="password" placeholder="Senha:" maxlength="30" required>
+                        </div>
+                    </div>
+                    <div class="input-box">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme sua senha:" required>
+                    </div>
+                    <button class="button" type="submit">Criar Conta</button>
+                </form>
+                </div>
+
+                    </div>
+                
+
+
+        <div class="ladoImg">
+            <img src="static/icons/register-woman.svg" alt="">
+        </div>
+    </div>
+
+</body>
+<script src="static/js/script.js"></script>
+</html>
