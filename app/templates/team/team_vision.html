@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <title>DreamTeam - {{equipe[1]}}</title>
+  </head>
+  <body>
+    {% include 'menu.html' %}
+    <div class="container-top">
+      <a href="/teams"><button class="button">Voltar</button></a>
+      <div class="flash.container">
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %} {% endwith %}
+      </div>
+      <h2>horas</h2>
+    </div>
+
+    <div class="container-team-vision">
+      <!--Menu Lateral-->
+      <aside class="sidebar">
+        <h2>{{equipe[1]}}</h2>
+        <ul>
+          <li data-section="team-details">Detalhes da Equipe</li>
+          <li data-section="projects">Projetos</li>
+          <li data-section="chat">Chat</li>
+          <li data-section="references">Murais de Referencias</li>
+          <li data-section="members">Membros</li>
+        </ul>
+      </aside>
+
+      <!-- Conteúdo Principal -->
+      <main class="content">
+        <!-- Detalhes -->
+        <section id="team-details" class="hidden">
+          <h1>{{equipe[1]}}</h1>
+          <h2>{{equipe[2]}}</h2>
+          <h3>Criado: {{equipe[5]}}</h3>
+        </section>
+        <!-- Projetos -->
+        <section id="projects" class="hidden">
+          <h1>Vasco</h1>
+        </section>
+        <!-- Chat -->
+        <section id="chat" class="hidden">
+          <h1>chat</h1>
+        </section>
+        <!-- Murais -->
+        <section id="references" class="hidden">
+          <h1>Murais</h1>
+        </section>
+        <!-- Membros -->
+        <section id="members" class="hidden">
+          <h1>Membros</h1>
+          <button
+            class="button"
+            id="button-form"
+            onclick="show_form()"
+            class="visible"
+          >
+            Convidar Membros
+          </button>
+          <div class="members_team" id="members_team">
+            <h1>vasco</h1>
+          </div>
+
+          <div class="form-box hidden" id="form-box">
+            <form action="{{ url_for('main.invite_to_team_route', team_id=equipe[0]) }}" method="POST">
+              <div class="title">Convidar Membro</div>
+              <div class="input-group">
+                <div class="input-box">
+                  <input
+                    type="text"
+                    id="usernameOrEmail"
+                    name="usernameOrEmail"
+                    maxlength="80"
+                    placeholder="Username ou Email do convidado:"
+                  />
+                </div>
+                <div class="input-box">
+                  <input
+                    type="text"
+                    name="mensagem"
+                    id="mensagem"
+                    placeholder="Mensagem para o convidado: (opcional)"
+                    maxlength="255"
+                  />
+                </div>
+                <button class="button" type="button" onclick="close_form()">
+                  Cancelar
+                </button>
+                <button class="button" type="submit">Enviar Convite</button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/team.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
+</html>

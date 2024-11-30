@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <header class="menu-superior">
+        <ul>
+            <div class="logo">
+            <li><a href="/dashboard"><img src="{{ url_for('static', filename='icons/DreamTeam.svg') }}" class="logo" alt="logo do DreamTeam"></a></li>
+        </div>
+        <li class="li-menu"><img src="{{ url_for('static', filename='icons/team.svg') }}" height="20" alt="icone de time"><a href="/teams">Equipes</a></li>
+        <li class="li-menu"><img src="{{ url_for('static', filename='icons/projeto.svg') }}" height="20" alt="icone de projeto"><a href="#">Projetos</a></li>
+        <li class="li-menu"><img src="{{ url_for('static', filename='icons/abraco.svg') }}" height="20" alt="dois bonecos se abraçando"><a href="#">Amigos</a></li>
+        <li class="li-menu"><img src="{{ url_for('static', filename='icons/perfil.svg') }}" height="20" alt="icone perfil"><a href="#">Perfil</a></li>
+        <li class="li-menu"><img src="{{ url_for('static', filename='icons/sair.svg') }}" height="20" alt="icone sair"><a href="/logout">Sair</a></li>
+            <li> <a href="#" id="theme-toggle" class="button-mode">
+                    <img src="{{ url_for('static', filename='icons/mode.svg') }}" alt="Ícone de sol e lua" height="25"></a></li>
+                    </div>
+        </ul>
+    </header>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <title>DreamTeam - Equipes</title>
+  </head>
+  <body>
+    {% include 'menu.html' %}
+
+    <div class="container-top">
+      <a href="/create_team"
+        ><button class="button">Criar nova Equipe</button></a
+      >
+      <div class="flash.container">
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %} {% endwith %}
+      </div>
+      <h2>horas</h2>
+    </div>
+
+    {% if equipes %}
+    <div class="teams-container">
+      {% for equipe in equipes %}
+      <div class="equipe-box">
+        <img class="equipe-foto" src="static/icons/noFoto.svg" alt="" />
+        <h3 class="equipe-nome">{{ equipe[1] }}</h3>
+        <p class="equipe-text">Membros: {{ equipe[4] }}</p>
+        <p class="equipe-text">Cargo: {{ equipe[5] }}</p>
+        <h4 class="equipe-txt">Projetos</h4>
+        {% if projetos %}
+        <ul>
+          {% for projeto in projetos %}
+          <li class="equipe-txt">{{projeto[0]}}</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="equipe-txt">Nenhum projeto foi criado ainda.</p>
+        {% endif %}
+        <div class="equipe-buttons">
+          <a href="{{url_for('main.team_vision_route', team_id=equipe[0])}}">
+            <button class="button">Ver Equipe</button>
+          </a>
+          <button class="button">Abrir chat da equipe</button>
+        </div>
+      </div>
+
+      {% endfor %}
+    </div>
+    {% else %}
+    <h1>Nenhuma equipe encontrada. Crie sua primeira equipe</h1>
+    {% endif %}
+  </body>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</html>

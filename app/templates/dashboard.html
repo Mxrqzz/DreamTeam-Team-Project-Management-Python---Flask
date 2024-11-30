@@ -1,11 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/css/style.css" />
+    <title>Dashboard - {{session["user_username"]}}</title>
+  </head>
+  <body>
+    {% include 'menu.html' %}
+
+    <div class="container-top">
+      <div class="flash.container">
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %} {% endwith %}
+      </div>
+    </div>
+
+    {% if convites %} {% if quantidade == 1 %}
+    <li id="alert-invite" onclick="show_invite()">{{quantidade}} Novo convite de equipe</li>
+    {% else %}
+    <li id="alert-invite" onclick="show_invite()">{{quantidade}} Novos Convites de equipe</li>
+    {% endif %}
+
+    <div class="invite-card hidden">
+      {% for convite in convites %}
+      <h3>Equipe: {{ convite[3] }}</h3>
+      <h5>Enviado por {{ convite[4] }} - {{ convite[5] }}</h5>
+      <h5>{{ convite[2] }}</h5>
+      <h5>Mensagem: {{ convite[1] }}</h5>
+      <form action="/decline_invite" method="POST">
+      <div class="buttons">
+        <input type="text" name="invite_id" style="display: none;" value="{{convite[0]}}" >
+
+        <button class="button" >Aceitar</button>
+        <button class="button" type="submit">Recusar</button>
+    </form>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </body>
+  <h1>Olá {{session["user_username"]}}</h1>
+  <script src="static/js/script.js"></script>
 </html>

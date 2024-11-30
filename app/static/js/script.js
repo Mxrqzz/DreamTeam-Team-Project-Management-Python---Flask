@@ -22,3 +22,22 @@ toggleButton.addEventListener('click', () => {
   applyTheme(newTheme);
   localStorage.setItem('theme', newTheme); // Salva a preferência no localStorage
 });
+
+//função para pegar o id do card do time
+function redirectToTeam(teamId) {
+  window.location.href = `/team_project?team_id=${teamId}`;
+}
+
+//Mostra o formulario
+function show_invite() {
+  document.getElementById("invite-card").classList.remove("hidden");  
+  document.getElementById("alert-invite").classList.add("hidden");  
+
+}
+
+//Fecha o formulario
+function close_invite() {
+  document.getElementById("invite-card").classList.add("hidden");  
+  document.getElementById("alert-invite").classList.remove("hidden");  
+
+}
