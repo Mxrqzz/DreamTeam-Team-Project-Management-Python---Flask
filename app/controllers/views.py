@@ -468,6 +468,8 @@ def adicionar_mensagem(equipe_id):
 def create_project():
     user_id = session.get('user_id')
     
+    print("teste1")
+    
     if request.method == "POST":
         nome = request.form["name"]
         descricao = request.form["descricao"]
@@ -478,11 +480,14 @@ def create_project():
         
         try:
             projeto = Projects(nome, descricao, data_inicio, data_fim, equipe_id, criador_id)
+            print("teste4")
             projeto.criar_projeto()
             flash("Projeto criado com sucesso!", "success")
             return redirect(url_for('main.team_vision_route', equipe_id=equipe_id))
         except Exception as e:
             flash(f"Erro ao criar projeto: {e}", "error")
             return redirect(url_for('main.team_vision_route',user_id=user_id))
+        
+    print("vasco")
         
         

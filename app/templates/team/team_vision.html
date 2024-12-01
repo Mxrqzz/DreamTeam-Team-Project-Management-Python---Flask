@@ -57,7 +57,7 @@
           <button class="button" id="create_project" onclick="show_form_project()">Criar projeto</button>
 
           <div class="form-box hidden" id="project-form">
-            <form action="/create_project " class="form" method="POST">
+            <form action="/create_project" class="form" method="POST">
               <div class="input-group">
                 <div class="input-box">
                   <input
@@ -78,17 +78,17 @@
                 </div>
                 <label for="data_inicio">Data Inicio</label>
                 <div class="input-box">
-                  <input type="time" name="data_inicio" />
+                  <input type="date" name="data_inicio" />
                 </div>
                 <div class="input-box">
                   <label for="data_fim">Data fim</label>
-                  <input type="time" name="data_fim" />
+                  <input type="datetime-local" name="data_fim" />
                 </div>
                 <input type="hidden" name="equipe_id" value="{{equipe_id}}" />
                 <input type="hidden" name="criador_id" value="{{criador_id}}" />
               </div>
           
-              <button type="submit" class="button" onclick="close_form_project()" id="cancel_project">
+              <button type="button" class="button" onclick="close_form_project()" id="cancel_project">
                 Cancelar
               </button>
               <button type="submit" class="button">Criar Projeto</button>
@@ -96,7 +96,6 @@
           </div>
           {% endif %}
         </section>
-
         <!-- Chat -->
         <section id="chat" class="hidden">
           <h1>Chat</h1>

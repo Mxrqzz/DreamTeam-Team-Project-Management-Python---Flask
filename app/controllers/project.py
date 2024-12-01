@@ -2,20 +2,19 @@ from app.database import create_connection, close_connection
 
 
 class Projects:
-    def __init__(self, nome, descricao, data_inicio, data_fim, equipe_id, criado_id):
+    def __init__(self, nome, descricao, data_inicio, data_fim, equipe_id, criador_id):
         self.nome = nome
         self.descricao = descricao
         self.data_inicio = data_inicio
         self.data_fim = data_fim
         self.equipe_id = equipe_id
-        self.criado_id = criado_id
+        self.criador_id = criador_id
         
     def criar_projeto(self):
         try:
             conexao = create_connection()
             if conexao:
                 cursor = conexao.cursor()
-
                 # Inserir dados na Tabela projetos
                 sql = """
                 INSERT INTO projetos (nome, descricao, data_inicio, data_fim, equipe_id, criador_id) 
@@ -27,7 +26,7 @@ class Projects:
                     self.data_inicio,
                     self.data_fim,
                     self.equipe_id,
-                    self.criado_id,
+                    self.criador_id,
                 )
                 cursor.execute(sql, values)
                 conexao.commit()
