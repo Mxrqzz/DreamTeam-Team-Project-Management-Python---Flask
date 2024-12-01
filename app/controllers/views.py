@@ -3,11 +3,13 @@ from app.database import create_connection, close_connection
 from flask_bcrypt import Bcrypt
 from app.controllers.user import User
 from app.controllers.team import Team
+from app.controllers.project import Projects
 from functools import wraps
+from flask import flash
+from datetime import datetime
 
 #! Instanciando Modulo que vai criptografar as senhas
 cripto = Bcrypt()
-
 
 #! tela inicial
 def index():
@@ -112,6 +114,7 @@ def controller_session(f):
 
 
 @controller_session
+#! Dashboard
 def dashboard():
     conexao = create_connection()
 
@@ -197,28 +200,79 @@ def create_team():
 #! Tela da equipe
 @controller_session
 def team_vision(team_id):
-
     conexao = create_connection()
 
+    mensagens = None
     equipe = None
-    projetos = None
-
+    membros = None
+    admin_id = None 
+    
+    user_id = session["user_id"]
+    
     if conexao:
         cursor = conexao.cursor()
-        # ? Buscando informações da equipe
-        cursor.execute("SELECT * FROM equipes WHERE id =%s", (team_id,))
-        equipe = cursor.fetchone()
 
-        close_connection(conexao)
+        try:
+            #! Buscar informações da equipe
+            cursor.execute("SELECT * FROM equipes WHERE id = %s", (team_id,))
+            equipe = cursor.fetchone()
+            if not equipe:
+                flash("Equipe não encontrada", "error")
+                return redirect(url_for("main.teams_route"))
 
-    if not equipe:
-        flash("Equipe não encontrada", "error")
-        return redirect(url_for("main.teams_route"))
+            # Buscar membros da equipe
+            membros = Team.listar_membros(team_id)
 
-    return render_template("team/team_vision.html", equipe=equipe)
+            # Buscar o administrador da equipe
+            cursor.execute(
+                """
+                SELECT user_id 
+                FROM equipe_membros 
+                WHERE equipe_id = %s AND cargo = 'administrador'
+                """,
+                (team_id,),
+            )
+            admin_result = cursor.fetchone()
+            
+            if admin_result:
+                admin_id = admin_result[0]
+                
+            cursor.execute(
+                """
+                SELECT cargo 
+                FROM equipe_membros 
+                WHERE user_id = %s
+                """,
+                (session["user_id"],),
+            )
 
+            cargo_user = cursor.fetchone()
+            if cargo_user:
+                cargo_user=cargo_user[0]
+                
+            
+            mensagens= Team.listar_mensagens(team_id)
+            
+                
+        except Exception as e:
+            print(f"Erro ao carregar informações da equipe: {e}")
+        finally:
+            close_connection(conexao)
+
+    return render_template(
+        "team/team_vision.html",
+        equipe=equipe,
+        membros=membros,
+        admin_id=admin_id,
+        user_id = user_id,
+        cargo_user=cargo_user,
+        team_id=team_id,
+        mensagens=mensagens
+        
+    )
 
 #! Convidar Membros para o time
+@controller_session
 def invite_to_team(team_id):
     if request.method == "POST":
         convidado = request.form["usernameOrEmail"]
@@ -290,32 +344,145 @@ def invite_to_team(team_id):
                 conexao.close()
 
 
-#!Aceitar o convite
-def accept_invite(): ...
+#! Aceitar Convite
+@controller_session
+def accept_invite():
+    if request.method == "POST":
+        convite_id = request.form.get("invite_id")
+        if not convite_id:
+            flash("Convite inválido.", "danger")
+            return redirect(url_for("main.dashboard_route"))
+        try:
+            conexao = create_connection()
+            cursor = conexao.cursor()
+            # Verifica se o convite pertence ao usuário
+            cursor.execute(
+                "SELECT receiver_id, equipe_id FROM convite_equipe WHERE invite_id=%s AND status='pendente'",
+                (convite_id,),
+            )
+            convite = cursor.fetchone()
+            if not convite or convite[0] != session["user_id"]:
+                flash("Convite não encontrado ou inválido.", "danger")
+                return redirect(url_for("main.dashboard_route"))
+
+            equipe_id = convite[1]
+            user_id = session["user_id"]
+            # Atualiza status do convite
+            cursor.execute(
+                "UPDATE convite_equipe SET status='aceito' WHERE invite_id=%s",
+                (convite_id,),
+            )
+            # Adiciona usuário à equipe
+            cursor.execute(
+                "INSERT INTO equipe_membros (equipe_id, user_id) VALUES (%s, %s)",
+                (equipe_id, user_id),
+            )
+            conexao.commit()
+            flash("Convite aceito com sucesso!", "success")
+        except Exception as e:
+            if conexao:
+                conexao.rollback()
+            flash(f"Erro ao aceitar convite: {e}", "danger")
+        finally:
+            close_connection(conexao)
+
+    return redirect(url_for("main.dashboard_route"))
 
 
 #!Recusar o convite
+@controller_session
 def decline_invite():
+
     if request.method == "POST":
         convite_id = request.form["invite_id"]
         print(f"{convite_id}")
-        
-    
+
         if convite_id:
             try:
                 conexao = create_connection()
                 if conexao:
                     cursor = conexao.cursor()
-                    cursor.execute("UPDATE convite_equipe SET status ='recusado' WHERE invite_id=%s",
-                                    (convite_id,),
-                                )
-                    
+                    cursor.execute(
+                        "UPDATE convite_equipe SET status ='recusado' WHERE invite_id=%s",
+                        (convite_id,),
+                    )
                     conexao.commit()
                     flash("Convite Recusado", "info")
             except Exception as e:
                 flash("Erro ao tentar recusar convite: {e}", "error")
-                ...
+            finally:
+                close_connection(conexao)
         else:
             flash("Convite não encontrado ou status invalido", "error")
-        ...
-    return  render_template("dashboard.html")
+
+    return render_template("dashboard.html")
+
+#! Alterar cargo
+@controller_session
+def alterar_cargo():
+    if request.method == "POST":
+        # Pegando os dados do formulário
+        equipe_id = request.form["equipe_id"]
+        user_id = request.form["user_id"]
+        novo_cargo = request.form["novo_cargo"]  # Nome do campo 'novo_cargo'
+
+        print(f"Equipe ID: {equipe_id}, User ID: {user_id}, Novo Cargo: {novo_cargo}")
+        
+        # Chama a função que atualiza o cargo
+        sucesso = Team.atualizar_cargo(user_id, novo_cargo, equipe_id)
+        
+        if sucesso:
+            flash("Cargo alterado com sucesso!", "success")
+            return redirect(url_for("main.teams_route"))
+        else:
+            flash("Erro ao alterar o cargo.", "danger")
+            return redirect(url_for("main.dashboard_route"))
+
+#! Enviar Mensagem
+@controller_session
+def adicionar_mensagem(equipe_id):
+    try:
+        # Obtém os dados do formulário
+        equipe_id = request.form['equipe_id']
+        user_id = session["user_id"]
+        mensagem = request.form['mensagem']
+        
+        # Verifica se os dados foram fornecidos corretamente
+        if not equipe_id or not user_id or not mensagem:
+            return flash({ "Todos os campos devem ser preenchidos.","error"})
+        
+        # Chama o método da classe Team para adicionar a mensagem
+        sucesso = Team.adicionar_mensagem(user_id, equipe_id, mensagem)
+        
+        # Verifica se a mensagem foi adicionada com sucesso
+        if sucesso:
+            # Redireciona para a página de mensagens do time
+            return redirect(url_for('main.team_vision_route', team_id=equipe_id,))
+        else:
+            return flash({ "Erro ao enviar mensagem.", "error"})
+    except Exception as e:
+        return flash({ f"Erro no servidor: {str(e)}","error"})
+    
+# Função para criar o projeto
+@controller_session
+def create_project():
+    user_id = session.get('user_id')
+    
+    if request.method == "POST":
+        nome = request.form["name"]
+        descricao = request.form["descricao"]
+        data_inicio = request.form["data_inicio"]
+        data_fim = request.form["data_fim"]
+        equipe_id = request.form["equipe_id"]
+        criador_id = user_id
+        
+        try:
+            projeto = Projects(nome, descricao, data_inicio, data_fim, equipe_id, criador_id)
+            projeto.criar_projeto()
+            flash("Projeto criado com sucesso!", "success")
+            return redirect(url_for('main.team_vision_route', equipe_id=equipe_id))
+        except Exception as e:
+            flash(f"Erro ao criar projeto: {e}", "error")
+            return redirect(url_for('main.team_vision_route',user_id=user_id))
+        
+        

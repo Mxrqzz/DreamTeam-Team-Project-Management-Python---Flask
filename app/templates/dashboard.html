@@ -24,9 +24,13 @@
     </div>
 
     {% if convites %} {% if quantidade == 1 %}
-    <li id="alert-invite" onclick="show_invite()">{{quantidade}} Novo convite de equipe</li>
+    <li id="alert-invite" onclick="show_invite()">
+      {{quantidade}} Novo convite de equipe
+    </li>
     {% else %}
-    <li id="alert-invite" onclick="show_invite()">{{quantidade}} Novos Convites de equipe</li>
+    <li id="alert-invite" onclick="show_invite()">
+      {{quantidade}} Novos Convites de equipe
+    </li>
     {% endif %}
 
     <div class="invite-card hidden">
@@ -35,13 +39,16 @@
       <h5>Enviado por {{ convite[4] }} - {{ convite[5] }}</h5>
       <h5>{{ convite[2] }}</h5>
       <h5>Mensagem: {{ convite[1] }}</h5>
-      <form action="/decline_invite" method="POST">
       <div class="buttons">
-        <input type="text" name="invite_id" style="display: none;" value="{{convite[0]}}" >
+        <form action="{{url_for('main.accept_invite_route')}}" method="POST">
+          <input type="hidden" name="invite_id" value="{{convite[0]}}" />
+          <button class="button" type="submit">Aceitar</button>
+        </form>
 
-        <button class="button" >Aceitar</button>
-        <button class="button" type="submit">Recusar</button>
-    </form>
+        <form action="{{url_for('main.decline_invite_route')}}" method="POST">
+          <input type="hidden" name="invite_id" value="{{convite[0]}}" />
+          <button class="button" type="submit">Recusar</button>
+        </form>
       </div>
       {% endfor %}
     </div>

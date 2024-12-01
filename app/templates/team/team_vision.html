@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,9 +11,10 @@
   </head>
   <body>
     {% include 'menu.html' %}
+
     <div class="container-top">
       <a href="/teams"><button class="button">Voltar</button></a>
-      <div class="flash.container">
+      <div class="flash-container">
         <!-- Mensagens Flash -->
         {% with messages = get_flashed_messages(with_categories=true) %} {% if
         messages %}
@@ -28,14 +29,14 @@
     </div>
 
     <div class="container-team-vision">
-      <!--Menu Lateral-->
+      <!-- Menu Lateral -->
       <aside class="sidebar">
         <h2>{{equipe[1]}}</h2>
         <ul>
           <li data-section="team-details">Detalhes da Equipe</li>
           <li data-section="projects">Projetos</li>
           <li data-section="chat">Chat</li>
-          <li data-section="references">Murais de Referencias</li>
+          <li data-section="references">Murais de Referências</li>
           <li data-section="members">Membros</li>
         </ul>
       </aside>
@@ -48,62 +49,200 @@
           <h2>{{equipe[2]}}</h2>
           <h3>Criado: {{equipe[5]}}</h3>
         </section>
+
         <!-- Projetos -->
         <section id="projects" class="hidden">
-          <h1>Vasco</h1>
-        </section>
-        <!-- Chat -->
-        <section id="chat" class="hidden">
-          <h1>chat</h1>
-        </section>
-        <!-- Murais -->
-        <section id="references" class="hidden">
-          <h1>Murais</h1>
-        </section>
-        <!-- Membros -->
-        <section id="members" class="hidden">
-          <h1>Membros</h1>
-          <button
-            class="button"
-            id="button-form"
-            onclick="show_form()"
-            class="visible"
-          >
-            Convidar Membros
-          </button>
-          <div class="members_team" id="members_team">
-            <h1>vasco</h1>
-          </div>
+          <h1>Projetos</h1>
+          {% if cargo_user != 'membro' %}
+          <button class="button" id="create_project" onclick="show_form_project()">Criar projeto</button>
 
-          <div class="form-box hidden" id="form-box">
-            <form action="{{ url_for('main.invite_to_team_route', team_id=equipe[0]) }}" method="POST">
-              <div class="title">Convidar Membro</div>
+          <div class="form-box hidden" id="project-form">
+            <form action="/create_project " class="form" method="POST">
               <div class="input-group">
                 <div class="input-box">
                   <input
                     type="text"
-                    id="usernameOrEmail"
-                    name="usernameOrEmail"
-                    maxlength="80"
-                    placeholder="Username ou Email do convidado:"
+                    name="name"
+                    id=""
+                    placeholder="Nome do Projeto:"
+                    maxlength="100"
+                    required
                   />
                 </div>
                 <div class="input-box">
                   <input
                     type="text"
-                    name="mensagem"
-                    id="mensagem"
-                    placeholder="Mensagem para o convidado: (opcional)"
-                    maxlength="255"
+                    name="descricao"
+                    placeholder="Descrição do projeto"
                   />
                 </div>
-                <button class="button" type="button" onclick="close_form()">
-                  Cancelar
-                </button>
-                <button class="button" type="submit">Enviar Convite</button>
+                <label for="data_inicio">Data Inicio</label>
+                <div class="input-box">
+                  <input type="time" name="data_inicio" />
+                </div>
+                <div class="input-box">
+                  <label for="data_fim">Data fim</label>
+                  <input type="time" name="data_fim" />
+                </div>
+                <input type="hidden" name="equipe_id" value="{{equipe_id}}" />
+                <input type="hidden" name="criador_id" value="{{criador_id}}" />
               </div>
+          
+              <button type="submit" class="button" onclick="close_form_project()" id="cancel_project">
+                Cancelar
+              </button>
+              <button type="submit" class="button">Criar Projeto</button>
             </form>
           </div>
+          {% endif %}
+        </section>
+
+        <!-- Chat -->
+        <section id="chat" class="hidden">
+          <h1>Chat</h1>
+
+          <div id="chat-container" class="chat-container">
+            {% if mensagens %}
+            <ul>
+              {% for mensagem in mensagens %}
+              <li>
+                <div
+                  class="mensagem {% if mensagem[2] == user_id %}my_mensagem{% else %}mensagem-equipe{% endif %}"
+                >
+                  <p>{{ mensagem[5] }}:</p>
+                  <!-- Nome do usuário -->
+                  <strong>{{ mensagem[3] }}</strong>
+                  <p>{{ mensagem[4] }}:</p>
+                  <!-- data da mensagem -->
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <p>Envie uma mensagem para a sua equipe.</p>
+            {% endif %}
+          </div>
+          <form
+            action="{{ url_for('main.adicionar_mensagem_route', team_id=equipe[0]) }}"
+            method="POST"
+          >
+            <input type="hidden" name="equipe_id" value="{{ equipe[0] }}" />
+            <textarea
+              class="textarea"
+              name="mensagem"
+              placeholder="Digite sua mensagem..."
+            ></textarea>
+            <button class="button-edit" type="submit">Enviar</button>
+          </form>
+        </section>
+
+        <!-- Murais -->
+        <section id="references" class="hidden">
+          <h1>Murais</h1>
+        </section>
+
+        <!-- Membros -->
+        <section id="members" class="hidden">
+          <h1>Membros</h1>
+          {% if cargo_user != "membro" %}
+          <button class="button" id="button-form" onclick="show_form()">
+            Convidar Membros
+          </button>
+          {% endif %}
+          <div class="members-team-container">
+            {% for membro in membros %}
+            <div class="members-team">
+              <h3>Nome: {{ membro[1] }}</h3>
+              <h4>{{ membro[2] }} #{{ membro[0] }}</h4>
+              <h5>Email: {{ membro[3] }}</h5>
+              <h5>Cargo: {{ membro[4] }}</h5>
+
+              {% if membro[4] != 'administrador' and admin_id ==
+              session["user_id"] %}
+              <div id="radio" class="hidden">
+                <form action="/alterar_cargo" method="POST">
+                  <input type="hidden" name="user_id" value="{{ membro[0] }}" />
+                  <input
+                    type="hidden"
+                    name="equipe_id"
+                    value="{{ equipe[0] }}"
+                  />
+                  <label>
+                    <input type="radio" name="novo_cargo" value="membro" {% if
+                    membro[4] == 'membro' %}checked{% endif %}> Membro
+                  </label>
+                  <label>
+                    <input type="radio" name="novo_cargo" value="moderador" {%
+                    if membro[4] == 'moderador' %}checked{% endif %}> Moderador
+                  </label>
+
+                  <div id="button-alter" class="hidden">
+                    <button
+                      type="button"
+                      id="button-cancel"
+                      onclick="close_cargo()"
+                    >
+                      Cancelar
+                    </button>
+                    <button type="submit" class="button-edit">Salvar</button>
+                  </div>
+                </form>
+              </div>
+              <button
+                id="button-editar"
+                class="button-edit"
+                onclick="show_cargo()"
+              >
+                Editar
+              </button>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          {% if cargo_user != "membro" %}
+          <div class="form-box hidden" id="form-box">
+            <div class="lado1">
+              <img
+                src="{{ url_for('static', filename='icons/add+user.svg') }}"
+                id="add-user-image"
+                alt="Adicionar Usuário"
+              />
+            </div>
+            <div class="lado2">
+              <form
+                action="{{ url_for('main.invite_to_team_route', team_id=equipe[0]) }}"
+                method="POST"
+              >
+                <div class="title">Convidar Membro</div>
+                <div class="input-group">
+                  <div class="input-box">
+                    <input
+                      type="text"
+                      id="usernameOrEmail"
+                      name="usernameOrEmail"
+                      maxlength="80"
+                      placeholder="Username ou Email do convidado:"
+                    />
+                  </div>
+                  <div class="input-box">
+                    <input
+                      type="text"
+                      name="mensagem"
+                      id="mensagem"
+                      placeholder="Mensagem para o convidado: (opcional)"
+                      maxlength="255"
+                    />
+                  </div>
+                  <button class="button" type="button" onclick="close_form()">
+                    Cancelar
+                  </button>
+                  <button class="button" type="submit">Enviar Convite</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          {% endif %}
         </section>
       </main>
     </div>

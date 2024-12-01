@@ -29,17 +29,17 @@ def logout_route():
 def dashboard_route():
     return dashboard()
 
-#! Teams
-@bp.route("/teams", methods=["GET", "POST"])
-def teams_route():
-    return teams()
 
 #! Tela da Equipe
 @bp.route("/team_vision/<int:team_id>")
 def team_vision_route(team_id):
     return team_vision(team_id)
+# equipe
+@bp.route("/teams")
+def teams_route():
+    return teams()
 
-#! Teams
+#! Team
 @bp.route("/create_team", methods=["GET", "POST"])
 def create_team_route():
     return create_team()
@@ -58,3 +58,18 @@ def accept_invite_route():
 @bp.route("/decline_invite", methods=["POST"])
 def decline_invite_route():
     return decline_invite()
+
+#! Recusar o convite para equipe
+@bp.route("/alterar_cargo", methods=["POST"])
+def alterar_cargo_route():
+    return alterar_cargo()
+
+#! Enviar Mensagem
+@bp.route("/adicionar_mensagem/<int:team_id>", methods=["POST"])
+def adicionar_mensagem_route(team_id):
+    return adicionar_mensagem(team_id)
+
+#! Project
+@bp.route("/create_project/<int:user_id>", methods=["GET", "POST"])
+def create_project_route():
+    return create_project()
