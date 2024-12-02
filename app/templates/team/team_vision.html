@@ -25,7 +25,6 @@
         </ul>
         {% endif %} {% endwith %}
       </div>
-      <h2>horas</h2>
     </div>
 
     <div class="container-team-vision">
@@ -56,27 +55,70 @@
           <a
             href="{{ url_for('main.criar_projeto_route', team_id=equipe[0]) }}"
           >
-            <button class="button">Criar projeto</button></a
-          >
+            <button class="button">Criar projeto</button>
+          </a>
           {% endif %}
+
           <h1>Projetos</h1>
 
           {% if projetos %}
-          <div class="members-team-container">
-            <div class="members-team">
-              {% for projeto in projetos %}
-              <h2>{{projeto[1]}}</h2>
-              <h4>descrição:</h4>
-              <h5>{{projeto[2]}}</h5>
+          <div class="projects-container">
+            {% for projeto in projetos %}
+            <div class="project-card">
+              <h2>{{ projeto[1] }}</h2>
+              <h4>Descrição:</h4>
+              <h5>{{ projeto[2] }}</h5>
               <h4>Status:</h4>
-               <h5> {{projeto[3]}}</h5>
-              <h4>Etapas:</h4>
-              {% endfor %}
+              <h5>{{ projeto[3] }}</h5>
+
+              {% if tarefas %} 
+              {% for tarefa in tarefas %} 
+              {% if tarefa.projeto_id == projeto[0] %}
+              <h3>{{ tarefa.nome }}</h3>
+              <h3>{{ tarefa.prazo }}</h3>
+              {% endif %} {% endfor %} {% else %}
+              <h2>Não há tarefas cadastradas</h2>
+              {% endif %}
+
+              <form
+                action="{{ url_for('main.criar_tarefa_route') }}"
+                method="POST"
+              >
+                <div class="input-group">
+                  <div class="input-boxes">
+                    <label for="nome_tarefa">Nome da Tarefa:</label>
+                    <input
+                      type="text"
+                      name="nome_tarefa"
+                      id="nome_tarefa"
+                      required
+                    />
+                  </div>
+                  <div class="input-boxes">
+                    <label for="prazo_tarefa">Prazo:</label>
+                    <input
+                      type="date"
+                      name="prazo_tarefa"
+                      id="prazo_tarefa"
+                      required
+                    />
+                    <input
+                      type="hidden"
+                      name="projeto_id"
+                      value="{{ projeto[0] }}"
+                    />
+                    <input type="hidden" name="team_id" value="{{ team_id }}" />
+                  </div>
+                </div>
+                <button type="submit" class="button">Adicionar Tarefa</button>
+              </form>
             </div>
+            {% endfor %}
           </div>
           {% else %}
           <p>
-            Esse time ainda nao criou nenhum projeto. Crie agora um novo projeto
+            Esse time ainda não criou nenhum projeto. Crie agora um novo
+            projeto!
           </p>
           {% endif %}
         </section>

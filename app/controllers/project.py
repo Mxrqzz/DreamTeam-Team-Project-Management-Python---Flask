@@ -76,6 +76,7 @@ class Projects:
 
             projetos = cursor.fetchall()
             return projetos
+            
 
         except Exception as e:
             print(f"Erro ao listar projetos: {e}")

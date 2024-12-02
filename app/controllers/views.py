@@ -3,6 +3,7 @@ from app.database import create_connection, close_connection
 from flask_bcrypt import Bcrypt
 from app.controllers.user import User
 from app.controllers.team import Team
+from app.controllers.tarefa import Tarefa
 from app.controllers.project import Projects
 from functools import wraps
 from flask import flash
@@ -198,8 +199,6 @@ def create_team():
     return render_template("team/create_team.html")
 
 
-
-#! Convidar Membros para o time
 @controller_session
 def team_vision(team_id):
     conexao = create_connection()
@@ -208,6 +207,8 @@ def team_vision(team_id):
     equipe = None
     membros = None
     admin_id = None
+    projetos = None
+    tarefas = None
 
     user_id = session["user_id"]
 
@@ -215,17 +216,16 @@ def team_vision(team_id):
         cursor = conexao.cursor()
 
         try:
-            # Buscar informações da equipe
             cursor.execute("SELECT * FROM equipes WHERE id = %s", (team_id,))
             equipe = cursor.fetchone()
             if not equipe:
                 flash("Equipe não encontrada", "error")
-                return redirect(url_for("main.teams_route"))
+                return redirect(url_for("main.teams_route", team_id))
+            
+            cursor.fetchall()
 
-            # Buscar membros da equipe
             membros = Team.listar_membros(team_id)
             
-
             # Buscar o administrador da equipe
             cursor.execute(
                 """
@@ -236,7 +236,8 @@ def team_vision(team_id):
                 (team_id,),
             )
             admin_result = cursor.fetchone()
-
+            cursor.fetchall()
+            
             if admin_result:
                 admin_id = admin_result[0]
 
@@ -250,14 +251,20 @@ def team_vision(team_id):
             )
 
             cargo_user = cursor.fetchone()
+            cursor.fetchall()
             if cargo_user:
                 cargo_user = cargo_user[0]
 
             mensagens = Team.listar_mensagens(team_id)
             projetos = Projects.listar_projetos(team_id)
-            # Se o cursor foi utilizado para múltiplas consultas, use next_result()
-            while conexao.next_result():
-                pass
+
+            # Verificar se existem projetos
+            if projetos:
+                for projeto in projetos:
+                    projeto_id = projeto[0]
+                    
+                tarefas = Tarefa.listar_tarefas(projeto_id)
+                print(tarefas)
 
         except Exception as e:
             print(f"Erro ao carregar informações da equipe: {e}")
@@ -273,12 +280,13 @@ def team_vision(team_id):
         cargo_user=cargo_user,
         team_id=team_id,
         mensagens=mensagens,
-        projetos=projetos
+        projetos=projetos,
+        tarefas=tarefas,
     )
 
 
 #! Convidar Membros para o time
-@controller_session'
+@controller_session
 def invite_to_team(team_id):
     if request.method == "POST":
         convidado = request.form["usernameOrEmail"]
@@ -348,6 +356,7 @@ def invite_to_team(team_id):
                 return redirect(url_for("main.team_vision_route", team_id=team_id))
             finally:
                 conexao.close()
+
 
 #! Aceitar Convite
 @controller_session
@@ -476,6 +485,7 @@ def adicionar_mensagem(equipe_id):
         return flash({f"Erro no servidor: {str(e)}", "error"})
 
 
+#! Criar Projeto
 @controller_session
 def create_project(team_id):
     if request.method == "POST":
@@ -484,7 +494,7 @@ def create_project(team_id):
             nome = request.form.get("nome", "").strip()
             descricao = request.form.get("descricao", "").strip()
             criador_id = session.get("user_id")
-            
+
             # Validação dos dados
             if not nome:
                 flash("O nome do projeto é obrigatório.", "error")
@@ -497,7 +507,7 @@ def create_project(team_id):
             # Criar o projeto
             projeto = Projects(nome, descricao, team_id, criador_id)
             projeto.criar_projeto()
-            
+
             # Redirecionar após sucesso
             flash(f"Projeto '{nome}' criado com sucesso.", "success")
             return redirect(url_for("main.team_vision_route", team_id=team_id))
@@ -508,3 +518,27 @@ def create_project(team_id):
 
     # Para métodos GET, exibir o formulário
     return render_template("team/create_project.html", team_id=team_id)
+
+
+def criar_tarefa():
+    if request.method == "POST":
+        try:
+            nome = request.form.get("nome_tarefa")
+            prazo = request.form.get("prazo_tarefa")
+            projeto_id = request.form.get("projeto_id")
+            team_id = request.form.get("team_id")
+
+            # Validar campos
+            if not nome or not prazo or not projeto_id or not team_id:
+                flash("Todos os campos obrigatórios devem ser preenchidos.", "error")
+                return redirect(url_for("main.team_vision_route", team_id=team_id))
+
+            # Criar a tarefa
+            tarefa = Tarefa(nome=nome, prazo=prazo, projeto_id=projeto_id)
+            tarefa.criar_tarefa()
+
+            flash("Tarefa criada com sucesso!", "success")
+        except Exception as e:
+            flash(f"Erro ao criar tarefa: {str(e)}", "error")
+
+        return redirect(url_for("main.team_vision_route", team_id=team_id))

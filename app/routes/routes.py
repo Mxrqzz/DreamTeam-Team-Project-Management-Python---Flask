@@ -72,3 +72,7 @@ def adicionar_mensagem_route(team_id):
 @bp.route("/criar_projeto/<int:team_id>", methods=["GET", "POST"])
 def criar_projeto_route(team_id):
     return create_project(team_id)
+
+@bp.route('/criar_tarefa', methods=['POST'])
+def criar_tarefa_route():
+    return criar_tarefa()

@@ -17,4 +17,4 @@ def create_connection():
 def close_connection(connection):
     if connection.is_connected():
         connection.close()
-        print("Conexão finalizada com o banco de dados.")
+

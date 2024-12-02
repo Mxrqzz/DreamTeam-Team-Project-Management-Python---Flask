@@ -7,18 +7,6 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-.background-ellipse {
-  position: absolute;
-  top: -100px; /* Ajuste a posição vertical */
-  left: -200px; /* Ajuste a posição horizontal */
-  width: 600px;
-  height: 400px;
-  background: transparent;
-  border: 5px solid #4caf50;
-  border-radius: 75%;
-  z-index: -1; /* Fica atrás de outros elementos */
-  opacity: 0.2; /* Torna a elipse mais suave */
-}
 /* Tema claro */
 body.light-mode {
   background-color: #f9f9f9;
@@ -181,6 +169,13 @@ body.dark-mode .icon-text .text h1 {
   border: 2px solid #4caf50;
   border-radius: 30px;
   width: 360px;
+  padding: 10px 15px;
+}
+
+.input-boxes input {
+  background: none;
+  border: 2px solid #4caf50;
+  border-radius: 30px;
   padding: 10px 15px;
 }
 
@@ -439,9 +434,9 @@ section {
 }
 
 .members-team {
-  max-width: 300px; /* Define o tamanho máximo */
-  min-width: 200px; /* Define o tamanho mínimo */
-  background-color: #1e1e1e; /* Cor de fundo */
+  max-width: 300px;
+  min-width: 200px;
+  background-color: #1e1e1e;
   border: 2px solid #4caf50;
   border-radius: 15px;
   padding: 15px;
@@ -454,9 +449,9 @@ section {
 }
 
 .formAndFoto {
-  display: flex; /* Organiza os elementos lado a lado */
-  gap: 30px; /* Espaçamento entre a imagem e o formulário */
-  align-items: center; /* Alinha verticalmente os itens ao centro */
+  display: flex;
+  gap: 30px;
+  align-items: center;
 }
 
 .lado1 img {
@@ -466,7 +461,7 @@ section {
 }
 
 .lado2 {
-  flex-grow: 1; /* Faz o formulário ocupar o restante do espaço disponível */
+  flex-grow: 1;
 }
 
 .button-edit {
@@ -493,8 +488,8 @@ section {
   width: 800px;
   border-radius: 50px;
   padding: 15px;
-  max-height: 400px; /* Limitar a altura */
-  overflow-y: auto; /* Rolagem para quando o número de mensagens for grande */
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .mensagem {
@@ -502,49 +497,49 @@ section {
   margin-bottom: 10px;
   border-radius: 10px;
   max-width: 70%;
-  word-wrap: break-word; /* Evitar que as mensagens quebrem a largura do contêiner */
+  word-wrap: break-word;
 }
 
-/* Mensagens enviadas pelo usuário atual (à direita) */
+
 .my_mensagem {
-  background-color: #81c784; /* Verde claro */
+  background-color: #81c784; 
   align-self: flex-end;
   text-align: right;
-  margin-left: auto; /* Alinha à direita */
-  color: black; /* Cor do texto */
+  margin-left: auto; 
+  color: black;
 }
 
-/* Mensagens enviadas por outros usuários (à esquerda) */
+
 .mensagem-equipe {
-  background-color: #155724; /* Cor neutra para mensagens de outros */
+  background-color: #155724; 
   align-self: flex-start;
   text-align: left;
-  margin-right: auto; /* Alinha à esquerda */
-  color: black; /* Cor do texto */
+  margin-right: auto; 
+  color: black; 
 }
 
 .mensagem-equipe p {
   text-align: left;
-  margin-right: auto; /* Alinha à esquerda */
+  margin-right: auto;
   color: black;
-  opacity: 70%; /* Cor do texto */
+  opacity: 70%; 
 }
 
 .my_mensagem p {
   text-align: right;
-  margin-left: auto; /* Alinha à esquerda */
+  margin-left: auto; 
   color: black;
   opacity: 70%;
 }
 
-/* Estilos do contêiner de chat */
+
 #chat-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 10px;
-  height: 100%; /* Preencher a altura disponível */
-  overflow-y: auto; /* Rolagem para o contêiner de mensagens */
+  height: 100%; 
+  overflow-y: auto; 
 }
 ul {
   list-style: none;
@@ -552,4 +547,35 @@ ul {
 /* Personalizando a barra de rolagem */
 #chat-container::-webkit-scrollbar {
   display: none;
+}
+
+.projects-container {
+  display: flex;
+  grid-template-columns: repeat(auto-fill, minmax(300px,3fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.project-card {
+  background-color: #1e1e1e;
+  border: 1px solid #4caf50;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: left;
+  box-shadow: 0px 5px 15px rgba(76, 175, 80, 0.2);
+}
+
+.project-card h2 {
+  color: #4caf50;
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.project-card h4,
+.project-card h5 {
+  margin: 5px 0;
+}
+
+.project-card form {
+  margin-top: 15px;
 }
