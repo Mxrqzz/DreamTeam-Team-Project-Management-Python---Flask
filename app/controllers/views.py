@@ -11,6 +11,7 @@ from datetime import datetime
 #! Instanciando Modulo que vai criptografar as senhas
 cripto = Bcrypt()
 
+
 #! tela inicial
 def index():
     return render_template("index.html")
@@ -197,7 +198,8 @@ def create_team():
     return render_template("team/create_team.html")
 
 
-#! Tela da equipe
+
+#! Convidar Membros para o time
 @controller_session
 def team_vision(team_id):
     conexao = create_connection()
@@ -205,15 +207,15 @@ def team_vision(team_id):
     mensagens = None
     equipe = None
     membros = None
-    admin_id = None 
-    
+    admin_id = None
+
     user_id = session["user_id"]
-    
+
     if conexao:
         cursor = conexao.cursor()
 
         try:
-            #! Buscar informações da equipe
+            # Buscar informações da equipe
             cursor.execute("SELECT * FROM equipes WHERE id = %s", (team_id,))
             equipe = cursor.fetchone()
             if not equipe:
@@ -222,6 +224,7 @@ def team_vision(team_id):
 
             # Buscar membros da equipe
             membros = Team.listar_membros(team_id)
+            
 
             # Buscar o administrador da equipe
             cursor.execute(
@@ -233,10 +236,10 @@ def team_vision(team_id):
                 (team_id,),
             )
             admin_result = cursor.fetchone()
-            
+
             if admin_result:
                 admin_id = admin_result[0]
-                
+
             cursor.execute(
                 """
                 SELECT cargo 
@@ -248,12 +251,14 @@ def team_vision(team_id):
 
             cargo_user = cursor.fetchone()
             if cargo_user:
-                cargo_user=cargo_user[0]
-                
-            
-            mensagens= Team.listar_mensagens(team_id)
-            
-                
+                cargo_user = cargo_user[0]
+
+            mensagens = Team.listar_mensagens(team_id)
+            projetos = Projects.listar_projetos(team_id)
+            # Se o cursor foi utilizado para múltiplas consultas, use next_result()
+            while conexao.next_result():
+                pass
+
         except Exception as e:
             print(f"Erro ao carregar informações da equipe: {e}")
         finally:
@@ -264,15 +269,16 @@ def team_vision(team_id):
         equipe=equipe,
         membros=membros,
         admin_id=admin_id,
-        user_id = user_id,
+        user_id=user_id,
         cargo_user=cargo_user,
         team_id=team_id,
-        mensagens=mensagens
-        
+        mensagens=mensagens,
+        projetos=projetos
     )
 
+
 #! Convidar Membros para o time
-@controller_session
+@controller_session'
 def invite_to_team(team_id):
     if request.method == "POST":
         convidado = request.form["usernameOrEmail"]
@@ -342,7 +348,6 @@ def invite_to_team(team_id):
                 return redirect(url_for("main.team_vision_route", team_id=team_id))
             finally:
                 conexao.close()
-
 
 #! Aceitar Convite
 @controller_session
@@ -417,6 +422,7 @@ def decline_invite():
 
     return render_template("dashboard.html")
 
+
 #! Alterar cargo
 @controller_session
 def alterar_cargo():
@@ -427,10 +433,10 @@ def alterar_cargo():
         novo_cargo = request.form["novo_cargo"]  # Nome do campo 'novo_cargo'
 
         print(f"Equipe ID: {equipe_id}, User ID: {user_id}, Novo Cargo: {novo_cargo}")
-        
+
         # Chama a função que atualiza o cargo
         sucesso = Team.atualizar_cargo(user_id, novo_cargo, equipe_id)
-        
+
         if sucesso:
             flash("Cargo alterado com sucesso!", "success")
             return redirect(url_for("main.teams_route"))
@@ -438,56 +444,67 @@ def alterar_cargo():
             flash("Erro ao alterar o cargo.", "danger")
             return redirect(url_for("main.dashboard_route"))
 
+
 #! Enviar Mensagem
 @controller_session
 def adicionar_mensagem(equipe_id):
     try:
         # Obtém os dados do formulário
-        equipe_id = request.form['equipe_id']
+        equipe_id = request.form["equipe_id"]
         user_id = session["user_id"]
-        mensagem = request.form['mensagem']
-        
+        mensagem = request.form["mensagem"]
+
         # Verifica se os dados foram fornecidos corretamente
         if not equipe_id or not user_id or not mensagem:
-            return flash({ "Todos os campos devem ser preenchidos.","error"})
-        
+            return flash({"Todos os campos devem ser preenchidos.", "error"})
+
         # Chama o método da classe Team para adicionar a mensagem
         sucesso = Team.adicionar_mensagem(user_id, equipe_id, mensagem)
-        
+
         # Verifica se a mensagem foi adicionada com sucesso
         if sucesso:
             # Redireciona para a página de mensagens do time
-            return redirect(url_for('main.team_vision_route', team_id=equipe_id,))
+            return redirect(
+                url_for(
+                    "main.team_vision_route",
+                    team_id=equipe_id,
+                )
+            )
         else:
-            return flash({ "Erro ao enviar mensagem.", "error"})
+            return flash({"Erro ao enviar mensagem.", "error"})
     except Exception as e:
-        return flash({ f"Erro no servidor: {str(e)}","error"})
-    
-# Função para criar o projeto
+        return flash({f"Erro no servidor: {str(e)}", "error"})
+
+
 @controller_session
-def create_project():
-    user_id = session.get('user_id')
-    
-    print("teste1")
-    
+def create_project(team_id):
     if request.method == "POST":
-        nome = request.form["name"]
-        descricao = request.form["descricao"]
-        data_inicio = request.form["data_inicio"]
-        data_fim = request.form["data_fim"]
-        equipe_id = request.form["equipe_id"]
-        criador_id = user_id
-        
         try:
-            projeto = Projects(nome, descricao, data_inicio, data_fim, equipe_id, criador_id)
-            print("teste4")
+            # Recuperar dados do formulário
+            nome = request.form.get("nome", "").strip()
+            descricao = request.form.get("descricao", "").strip()
+            criador_id = session.get("user_id")
+            
+            # Validação dos dados
+            if not nome:
+                flash("O nome do projeto é obrigatório.", "error")
+                return render_template("team/create_project.html", team_id=team_id)
+
+            if not criador_id:
+                flash("Usuário não autenticado.", "error")
+                return redirect(url_for("login"))
+
+            # Criar o projeto
+            projeto = Projects(nome, descricao, team_id, criador_id)
             projeto.criar_projeto()
-            flash("Projeto criado com sucesso!", "success")
-            return redirect(url_for('main.team_vision_route', equipe_id=equipe_id))
+            
+            # Redirecionar após sucesso
+            flash(f"Projeto '{nome}' criado com sucesso.", "success")
+            return redirect(url_for("main.team_vision_route", team_id=team_id))
+
         except Exception as e:
-            flash(f"Erro ao criar projeto: {e}", "error")
-            return redirect(url_for('main.team_vision_route',user_id=user_id))
-        
-    print("vasco")
-        
-        
+            flash(f"Erro ao criar projeto: {str(e)}", "error")
+            return render_template("team/team_vision.html", team_id=team_id)
+
+    # Para métodos GET, exibir o formulário
+    return render_template("team/create_project.html", team_id=team_id)

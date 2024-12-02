@@ -69,7 +69,6 @@ def alterar_cargo_route():
 def adicionar_mensagem_route(team_id):
     return adicionar_mensagem(team_id)
 
-#! Project
-@bp.route("/create_project/<int:user_id>", methods=["GET", "POST"])
-def create_project_route():
-    return create_project()
+@bp.route("/criar_projeto/<int:team_id>", methods=["GET", "POST"])
+def criar_projeto_route(team_id):
+    return create_project(team_id)

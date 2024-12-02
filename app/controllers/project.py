@@ -2,72 +2,85 @@ from app.database import create_connection, close_connection
 
 
 class Projects:
-    def __init__(self, nome, descricao, data_inicio, data_fim, equipe_id, criador_id):
+    def __init__(self, nome, descricao, equipe_id, criador_id):
         self.nome = nome
         self.descricao = descricao
-        self.data_inicio = data_inicio
-        self.data_fim = data_fim
         self.equipe_id = equipe_id
         self.criador_id = criador_id
-        
+
     def criar_projeto(self):
         try:
             conexao = create_connection()
-            if conexao:
-                cursor = conexao.cursor()
-                # Inserir dados na Tabela projetos
-                sql = """
-                INSERT INTO projetos (nome, descricao, data_inicio, data_fim, equipe_id, criador_id) 
-                VALUES (%s, %s, %s, %s, %s, %s)
-                """
-                values = (
-                    self.nome,
-                    self.descricao,
-                    self.data_inicio,
-                    self.data_fim,
-                    self.equipe_id,
-                    self.criador_id,
-                )
-                cursor.execute(sql, values)
-                conexao.commit()
+            if not conexao:
+                raise Exception("Falha ao conectar com o banco de dados.")
 
-                print(f"Projeto {self.nome} cadastrado com sucesso.")
+            cursor = conexao.cursor()
+
+            # Validação do nome do projeto
+            if not self.nome:
+                raise ValueError("O projeto precisa ter um nome válido.")
+
+            # Verificar se o projeto já existe
+            cursor.execute("SELECT * FROM projetos WHERE nome=%s", (self.nome,))
+            existing_project = cursor.fetchone()
+
+            if existing_project:
+                raise ValueError("Já existe um projeto com esse nome.")
+
+            # Inserir dados na tabela projetos
+            sql = """
+                INSERT INTO projetos (nome, descricao, equipe_id, criador_id) 
+                VALUES (%s, %s, %s, %s)
+            """
+            values = (self.nome, self.descricao, self.equipe_id, self.criador_id)
+            cursor.execute(sql, values)
+            conexao.commit()
+
+            print(f"Projeto '{self.nome}' cadastrado com sucesso.")
 
         except Exception as e:
             print(f"Erro ao criar projeto: {e}")
-            raise  # Re-raise the exception for the controller to handle
+            raise  # Re-lançar a exceção para que o controlador lide com ela
 
         finally:
-            if cursor:
+            # Certifique-se de que os recursos sejam liberados corretamente
+            if 'cursor' in locals():
                 cursor.close()
             close_connection(conexao)
             print("Conexão com o banco de dados encerrada.")
 
     @staticmethod
-    def listar_projetos(user_id):
-        conexao = create_connection()
+    def listar_projetos(equipe_id=None):
+        try:
+            conexao = create_connection()
+            if not conexao:
+                raise Exception("Falha ao conectar com o banco de dados.")
 
-        if conexao:
             cursor = conexao.cursor()
 
-            sql = """
-                SELECT p.id, p.nome, p.descricao, p.data_inicio, p.data_fim, p.status, p.equipe_id, p.criado_em
-                FROM projetos p
-                JOIN equipe_membros em ON p.equipe_id = em.equipe_id
-                WHERE em.user_id = %s
-                ORDER BY p.criado_em DESC  -- Exemplo de ordenação
-            """
+            if equipe_id:
+                # Consultar projetos específicos de uma equipe
+                sql = """
+                    SELECT id, nome, descricao, status, criado_em 
+                    FROM projetos 
+                    WHERE equipe_id = %s
+                """
+                cursor.execute(sql, (equipe_id,))
+            else:
+                # Consultar todos os projetos
+                sql = """
+                    SELECT id, nome, descricao, status, criado_em 
+                    FROM projetos
+                """
+                cursor.execute(sql)
 
-            try:
-                cursor.execute(sql, (user_id,))
-                projetos = cursor.fetchall()
-                if projetos:
-                    return projetos
-                else:
-                    return None
-            except Exception as e:
-                print(f"Erro ao listar projetos: {e}")
-                return None
-            finally:
-                cursor.close()
-                close_connection(conexao)
+            projetos = cursor.fetchall()
+            return projetos
+
+        except Exception as e:
+            print(f"Erro ao listar projetos: {e}")
+            return None
+
+        finally:
+            close_connection(conexao)
+            print("Conexão com o banco de dados encerrada.")

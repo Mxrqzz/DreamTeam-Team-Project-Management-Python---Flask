@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <title>DreamTeam - Criar equipe</title>
+  </head>
+  <body>
+    {% include 'menu.html' %}
+
+    <div class="container-top">
+      <a href="{{ url_for('main.team_vision_route', team_id=team_id) }}"
+        ><button class="button">Cancelar e voltar</button></a>
+        <div class="flash-container">
+          <!-- Mensagens Flash -->
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %}
+          <ul class="flashes">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %} {% endwith %}
+        </div>
+    </div>
+
+    <div class="container">
+      <div class="form-box">
+        <form
+          class="formulario"
+          action="{{ url_for('main.criar_projeto_route', team_id=team_id) }}"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <div class="title">Crie um novo projeto</div>
+          <div class="input-group">
+            <div class="input-box">
+              <input
+                type="text"
+                id="equipe"
+                name="nome"
+                placeholder="Nome do projeto:"
+                required
+                maxlength="32"
+              />
+            </div>
+            <div class="input-box">
+              <input
+                type="text"
+                id="descricao"
+                name="descricao"
+                placeholder="Descrição do Projeto:"
+              />
+            </div>
+            <div class="input-box">
+              <label for="foto" class="custom-file-label">
+                <img src="static/icons/upload.svg" height="20" alt="" />Enviar
+                Foto da Projeto</label
+              >
+              <input
+                type="file"
+                id="foto"
+                name="foto"
+                placeholder="Foto da equipe"
+                class="custom-file-input"
+              />
+            </div>
+          </div>
+          <div class="button-box">
+            <button class="button">Criar Projeto</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</html>

@@ -40,6 +40,7 @@ class Team:
                 close_connection(conexao)
                 print("A Conexão com o banco de dados foi encerrada.")
 
+
     @staticmethod
     def listar_equipes(user_id):
         conexao = create_connection()
@@ -54,6 +55,7 @@ class Team:
                     equipes.descricao, 
                     equipes.criado,
                     (SELECT COUNT(*) FROM equipe_membros WHERE equipe_membros.equipe_id = equipes.id) AS qtd_membros,
+                    (SELECT COUNT(*) FROM projetos WHERE projetos.equipe_id = equipes.id) AS qtd_projetos,
                     equipe_membros.cargo
                 FROM equipes
                 JOIN equipe_membros ON equipes.id = equipe_membros.equipe_id
@@ -72,8 +74,9 @@ class Team:
                 print(f"Erro ao listar equipes: {e}")
                 return None
             finally:
-                cursor.close()
                 close_connection(conexao)
+
+
 
     @staticmethod
     def listar_membros(equipe_id):

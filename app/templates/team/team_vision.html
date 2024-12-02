@@ -52,50 +52,35 @@
 
         <!-- Projetos -->
         <section id="projects" class="hidden">
-          <h1>Projetos</h1>
           {% if cargo_user != 'membro' %}
-          <button class="button" id="create_project" onclick="show_form_project()">Criar projeto</button>
+          <a
+            href="{{ url_for('main.criar_projeto_route', team_id=equipe[0]) }}"
+          >
+            <button class="button">Criar projeto</button></a
+          >
+          {% endif %}
+          <h1>Projetos</h1>
 
-          <div class="form-box hidden" id="project-form">
-            <form action="/create_project" class="form" method="POST">
-              <div class="input-group">
-                <div class="input-box">
-                  <input
-                    type="text"
-                    name="name"
-                    id=""
-                    placeholder="Nome do Projeto:"
-                    maxlength="100"
-                    required
-                  />
-                </div>
-                <div class="input-box">
-                  <input
-                    type="text"
-                    name="descricao"
-                    placeholder="Descrição do projeto"
-                  />
-                </div>
-                <label for="data_inicio">Data Inicio</label>
-                <div class="input-box">
-                  <input type="date" name="data_inicio" />
-                </div>
-                <div class="input-box">
-                  <label for="data_fim">Data fim</label>
-                  <input type="datetime-local" name="data_fim" />
-                </div>
-                <input type="hidden" name="equipe_id" value="{{equipe_id}}" />
-                <input type="hidden" name="criador_id" value="{{criador_id}}" />
-              </div>
-          
-              <button type="button" class="button" onclick="close_form_project()" id="cancel_project">
-                Cancelar
-              </button>
-              <button type="submit" class="button">Criar Projeto</button>
-            </form>
+          {% if projetos %}
+          <div class="members-team-container">
+            <div class="members-team">
+              {% for projeto in projetos %}
+              <h2>{{projeto[1]}}</h2>
+              <h4>descrição:</h4>
+              <h5>{{projeto[2]}}</h5>
+              <h4>Status:</h4>
+               <h5> {{projeto[3]}}</h5>
+              <h4>Etapas:</h4>
+              {% endfor %}
+            </div>
           </div>
+          {% else %}
+          <p>
+            Esse time ainda nao criou nenhum projeto. Crie agora um novo projeto
+          </p>
           {% endif %}
         </section>
+
         <!-- Chat -->
         <section id="chat" class="hidden">
           <h1>Chat</h1>
@@ -245,8 +230,7 @@
         </section>
       </main>
     </div>
-
-    <script src="{{ url_for('static', filename='js/team.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
   </body>
+  <script src="{{ url_for('static', filename='js/team.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </html>

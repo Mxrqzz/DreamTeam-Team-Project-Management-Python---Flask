@@ -33,14 +33,12 @@
       <div class="equipe-box">
         <img class="equipe-foto" src="static/icons/noFoto.svg" alt="" />
         <h3 class="equipe-nome">{{ equipe[1] }}</h3>
-        <p class="equipe-text">Membros: {{ equipe[4] }}</p>
-        <p class="equipe-text">Cargo: {{ equipe[5] }}</p>
+        <p class="equipe-text">Membros: {{ equipe[4] }} membros</p>
+        <p class="equipe-text">Cargo: {{ equipe[6] }}</p>
         <h4 class="equipe-txt">Projetos</h4>
-        {% if projetos %}
+        {% if equipe[5] %}
         <ul>
-          {% for projeto in projetos %}
-          <li class="equipe-txt">{{projeto[0]}}</li>
-          {% endfor %}
+          <p class="equipe-text">{{ equipe[5] }} Projetos</p>
         </ul>
         {% else %}
         <p class="equipe-txt">Nenhum projeto foi criado ainda.</p>
@@ -49,7 +47,6 @@
           <a href="{{url_for('main.team_vision_route', team_id=equipe[0])}}">
             <button class="button">Ver Equipe</button>
           </a>
-          <button class="button">Abrir chat da equipe</button>
         </div>
       </div>
 
